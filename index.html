@@ -3,109 +3,196 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PC Power Cost Calculator</title>
+<meta name="theme-color" content="#101a32">
+<meta name="description" content="Estimate your PC electricity use and running cost. Enter power, hours and your electricity rate to see monthly and yearly costs.">
+<title>PC Power Cost Calculator | Electricity Cost Estimator</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#172033;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{background:#101a32;color:#fff;padding:26px 18px}header p{color:#d7def0;margin:8px 0 0}
-main{max-width:900px;margin:auto;padding:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.card{background:#fff;border:1px solid #dfe5ef;border-radius:15px;padding:18px}
-h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:5px 0}h2{font-size:1.12rem;margin:0 0 12px}
-label{display:block;font-weight:650;font-size:.9rem;margin:12px 0 5px}
-input{display:block;width:100%;min-height:46px;padding:10px 12px;border:1px solid #bdc8d8;border-radius:9px;font:inherit;font-size:16px;background:white;color:#172033}
-input:focus{outline:3px solid #2457d622;border-color:#2457d6}
-.two,.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.metric{background:#f1f5fb;border-radius:11px;padding:12px}.metric small{display:block;color:#64748b}.metric strong{display:block;font-size:1.35rem;margin-top:3px}
-.metric.big{grid-column:1/-1;background:#eaf0ff}.metric.big strong{font-size:2.1rem;color:#2457d6}
-button{min-height:46px;padding:10px 16px;border:0;border-radius:9px;font:inherit;font-weight:700;cursor:pointer}
-#update{background:#2457d6;color:white;width:100%;margin-top:16px}
-#reset{background:#e9eefb;color:#1e3a8a;width:100%;margin-top:8px}
-.status{font-size:.82rem;color:#087f5b;min-height:1.3em;margin:8px 0 0}
-.saving{background:#ecfdf5;color:#075b43;padding:12px;border-radius:10px;margin-top:10px;font-weight:700}
-.hint{font-size:.8rem;color:#64748b;margin:5px 0}
-@media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:13px}.card{padding:16px}}
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#dce4ef;--paper:#fff;--canvas:#f3f6fb;--navy:#101a32;--blue:#2457d6;--blue-pale:#edf2ff;--green:#087f5b;--green-pale:#ecfdf5;--shadow:0 18px 48px #14223c12}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--canvas);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}button,input{font:inherit}button{cursor:pointer}a{color:var(--blue)}
+.hero{background:radial-gradient(ellipse at 85% 0,#263e70 0,transparent 42%),var(--navy);color:#fff;padding:42px 20px 72px}.hero-inner,.page{max-width:1080px;margin:auto}.eyebrow{display:flex;align-items:center;gap:9px;color:#b8c9ff;font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.eyebrow-dot{width:8px;height:8px;border-radius:50%;background:#72dfa9;box-shadow:0 0 0 4px #72dfa922}h1{max-width:740px;font-size:clamp(2rem,5vw,3.6rem);line-height:1.06;letter-spacing:-.04em;margin:14px 0 13px}.hero p{max-width:660px;margin:0;color:#d6def0;font-size:1.05rem}.trust-row{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:20px;color:#d6def0;font-size:.88rem}.trust-row span{display:inline-flex;align-items:center;gap:8px}.trust-row b{color:#72dfa9;font-size:1rem}
+.page{padding:0 20px 50px;margin-top:-40px}.calculator-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow)}h2{margin:0;font-size:1.25rem;line-height:1.25;letter-spacing:-.02em}.intro{margin:6px 0 19px;color:var(--muted);font-size:.92rem}.section-label{display:block;margin:0 0 9px;font-size:.85rem;font-weight:750}.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:19px}.preset{min-height:72px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);text-align:left;transition:border-color .15s,background .15s,transform .15s}.preset:hover{border-color:#91a9e8;transform:translateY(-1px)}.preset[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-pale);box-shadow:inset 0 0 0 1px var(--blue)}.preset strong{display:block;font-size:.86rem}.preset small{display:block;color:var(--muted);font-size:.73rem;margin-top:2px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.field{min-width:0}.field.wide{grid-column:1/-1}label{display:block;margin:10px 0 5px;font-size:.86rem;font-weight:700}.input-wrap{position:relative}.input-wrap input{display:block;width:100%;min-height:48px;border:1px solid #bdc8d8;border-radius:10px;padding:10px 42px 10px 12px;background:#fff;color:var(--ink);font-size:1rem;transition:border-color .15s,box-shadow .15s}.input-wrap input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px #2457d622}.input-unit{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.83rem;pointer-events:none}.hint{margin:5px 0 0;color:var(--muted);font-size:.76rem;line-height:1.4}.actions{display:flex;gap:9px;margin-top:18px}.btn{min-height:46px;border:1px solid transparent;border-radius:10px;padding:10px 15px;font-size:.92rem;font-weight:750;transition:background .15s,border-color .15s,transform .15s}.btn:hover{transform:translateY(-1px)}.btn-primary{flex:1;background:var(--blue);color:#fff}.btn-primary:hover{background:#1e49b8}.btn-secondary{background:#f1f4fa;color:#29436f;border-color:#e1e7f1}.btn-secondary:hover{background:#e9eef7}.status{min-height:1.35em;margin:10px 0 0;color:var(--green);font-size:.8rem}.result-panel{position:sticky;top:18px}.result-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.result-tag{border-radius:999px;background:var(--green-pale);color:#075b43;padding:5px 9px;font-size:.72rem;font-weight:800}.result-main{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:8px 14px;margin:18px 0 12px;padding:17px;border:1px solid #dce6ff;border-radius:15px;background:linear-gradient(135deg,#f1f5ff,#e7efff)}.result-main small{display:block;color:#53647f;font-size:.82rem}.result-main strong{display:block;margin-top:1px;color:var(--blue);font-size:clamp(2rem,4vw,2.8rem);line-height:1.05;letter-spacing:-.04em}.energy-total{text-align:right}.energy-total strong{font-size:1.2rem;color:var(--ink);letter-spacing:-.02em}.metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{min-width:0;padding:12px;border-radius:12px;background:#f4f7fb}.metric small{display:block;color:var(--muted);font-size:.76rem}.metric strong{display:block;margin-top:3px;font-size:1.18rem;letter-spacing:-.02em}.note{margin:12px 0 0;color:var(--muted);font-size:.78rem}.divider{height:1px;margin:20px 0;background:var(--line)}.compare-head{margin-bottom:4px}.compare-result{margin:11px 0 0;padding:12px 13px;border-radius:11px;background:var(--green-pale);color:#075b43;font-size:.9rem;font-weight:750}.compare-result.more{background:#fff6e8;color:#8a4b00}.result-actions{display:flex;align-items:center;gap:10px;margin-top:15px}.result-actions .btn{flex:0 0 auto}.share-field{margin-top:10px}.share-field input{width:100%;min-height:42px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--muted);font-size:.78rem}.content-section{margin-top:20px}.content-section h2{margin-bottom:12px}.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.info-card{padding:17px;border:1px solid var(--line);border-radius:14px;background:#fff}.info-card h3{margin:0 0 6px;font-size:.95rem}.info-card p{margin:0;color:var(--muted);font-size:.84rem}.formula{margin-top:13px;padding:13px 15px;border-radius:12px;background:#f3f6fb;color:#42516a;font-size:.86rem}.formula strong{color:var(--ink)}footer{max-width:1080px;margin:auto;padding:0 20px 30px;color:var(--muted);font-size:.78rem}.footer-inner{border-top:1px solid var(--line);padding-top:17px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:760px){.hero{padding:32px 16px 62px}.page{padding:0 14px 36px}.calculator-grid{grid-template-columns:1fr}.panel{padding:19px;border-radius:17px}.result-panel{position:static}.info-grid{grid-template-columns:1fr}.presets{gap:7px}.preset{padding:9px 8px}.preset strong{font-size:.78rem}.preset small{font-size:.68rem}footer{padding:0 14px 24px}}
+@media(max-width:400px){.field-grid{grid-template-columns:1fr}.field.wide{grid-column:auto}.presets{grid-template-columns:1fr}.preset{min-height:58px}.actions{flex-direction:column}.result-main{grid-template-columns:1fr}.energy-total{text-align:left}.result-actions{align-items:stretch;flex-direction:column}.result-actions .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header><div style="max-width:900px;margin:auto"><div style="font-size:.75rem;color:#9db7ff;font-weight:800;letter-spacing:.12em">FREE PC & ELECTRONICS TOOL</div><h1>PC Power Cost Calculator</h1><p>Change the figures, then tap Update price. Your entered values will stay in place.</p></div></header>
-<main><div class="grid">
-<section class="card">
-<h2>Your setup</h2>
-<label for="watts">Average power draw (watts)</label><input id="watts" type="number" min="0" step="any" value="450" inputmode="decimal">
-<p class="hint">Use average measured power draw where possible. PSU capacity is not constant consumption.</p>
-<div class="two">
-<div><label for="hours">Hours per day</label><input id="hours" type="number" min="0" max="24" step="any" value="5" inputmode="decimal"></div>
-<div><label for="days">Days per week</label><input id="days" type="number" min="0" max="7" step="any" value="7" inputmode="decimal"></div>
-</div>
-<label for="rate">Electricity price (pence per kWh)</label><input id="rate" type="number" min="0" step="any" value="25" inputmode="decimal">
-<div class="two">
-<div><label for="quantity">Number of devices</label><input id="quantity" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
-<div><label for="daysmonth">Days per month</label><input id="daysmonth" type="number" min="1" max="31" step="1" value="30" inputmode="numeric"></div>
-</div>
-<button id="update" type="button">Update price</button>
-<button id="reset" type="button">Reset example</button>
-<p class="status" id="status" aria-live="polite">Ready. Change any value or tap Update price.</p>
-</section>
-<section class="card" aria-live="polite">
-<h2>Estimated running cost</h2>
-<div class="metrics">
-<div class="metric big"><small>Monthly cost</small><strong id="monthly">£50.63</strong></div>
-<div class="metric"><small>Per hour</small><strong id="hourly">£0.11</strong></div>
-<div class="metric"><small>Per day</small><strong id="daily">£0.56</strong></div>
-<div class="metric"><small>Per week</small><strong id="weekly">£3.94</strong></div>
-<div class="metric"><small>Per year</small><strong id="yearly">£615.94</strong></div>
-<div class="metric"><small>Monthly energy</small><strong id="energy">202.50 kWh</strong></div>
-</div>
-<p class="hint">Estimates exclude standing charges and assume the entered average draw throughout usage hours.</p>
-<hr style="border:0;border-top:1px solid #e2e8f0;margin:17px 0">
-<h2>Compare an upgrade</h2>
-<label for="newwatts">New setup power draw (watts)</label><input id="newwatts" type="number" min="0" step="any" value="300" inputmode="decimal">
-<div class="saving" id="saving">Potential saving: £16.88 per month</div>
-</section></div></main>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Free PC &amp; electronics tool</div>
+    <h1>PC Power Cost Calculator</h1>
+    <p>Estimate what your computer costs to run each month and year. Use your own power reading and electricity price for a more useful estimate.</p>
+    <div class="trust-row"><span><b aria-hidden="true">✓</b> No sign-up</span><span><b aria-hidden="true">✓</b> Your inputs stay in this browser</span><span><b aria-hidden="true">✓</b> Works on mobile</span></div>
+  </div>
+</header>
+<main class="page">
+  <div class="calculator-grid" id="calculator">
+    <section class="panel" aria-labelledby="setup-title">
+      <h2 id="setup-title">Your setup</h2>
+      <p class="intro">Start with a quick example or enter your own figures.</p>
+      <span class="section-label">Quick starting points <span style="font-weight:400;color:#64748b">(illustrative)</span></span>
+      <div class="presets" role="group" aria-label="Example PC profiles">
+        <button class="preset" type="button" data-watts="120" data-hours="6" aria-pressed="false"><strong>Office PC</strong><small>120 W · 6 hours/day</small></button>
+        <button class="preset" type="button" data-watts="450" data-hours="4" aria-pressed="false"><strong>Gaming PC</strong><small>450 W · 4 hours/day</small></button>
+        <button class="preset" type="button" data-watts="700" data-hours="4" aria-pressed="false"><strong>High power</strong><small>700 W · 4 hours/day</small></button>
+      </div>
+      <div class="field-grid">
+        <div class="field wide">
+          <label for="watts">Average power draw</label>
+          <div class="input-wrap"><input id="watts" type="number" min="0" max="10000" step="any" value="450" inputmode="decimal"><span class="input-unit">watts</span></div>
+          <p class="hint">Use a wall meter reading if you have one. A power supply’s rated capacity is not its constant draw.</p>
+        </div>
+        <div class="field">
+          <label for="hours">Hours per day</label>
+          <div class="input-wrap"><input id="hours" type="number" min="0" max="24" step="any" value="5" inputmode="decimal"><span class="input-unit">hours</span></div>
+        </div>
+        <div class="field">
+          <label for="days">Days per week</label>
+          <div class="input-wrap"><input id="days" type="number" min="0" max="7" step="any" value="7" inputmode="decimal"><span class="input-unit">days</span></div>
+        </div>
+        <div class="field wide">
+          <label for="rate">Electricity price</label>
+          <div class="input-wrap"><input id="rate" type="number" min="0" max="1000" step="any" value="25" inputmode="decimal"><span class="input-unit">p/kWh</span></div>
+          <p class="hint">Check the unit rate on your electricity bill. Standing charges are not included.</p>
+        </div>
+        <div class="field">
+          <label for="quantity">Number of devices</label>
+          <div class="input-wrap"><input id="quantity" type="number" min="1" max="100" step="1" value="1" inputmode="numeric"><span class="input-unit">devices</span></div>
+        </div>
+        <div class="field">
+          <label for="daysmonth">Days in estimate month</label>
+          <div class="input-wrap"><input id="daysmonth" type="number" min="1" max="31" step="1" value="30" inputmode="numeric"><span class="input-unit">days</span></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="update" type="button">Update estimate</button>
+        <button class="btn btn-secondary" id="reset" type="button">Reset example</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite">Your estimate updates as you change the figures.</p>
+    </section>
+
+    <section class="panel result-panel" aria-labelledby="results-title" aria-live="polite">
+      <div class="result-top"><h2 id="results-title">Estimated running cost</h2><span class="result-tag">Estimate</span></div>
+      <div class="result-main">
+        <div><small>Monthly cost</small><strong id="monthly">£16.88</strong></div>
+        <div class="energy-total"><small>Energy this month</small><strong id="energy">67.50 kWh</strong></div>
+      </div>
+      <div class="metric-grid">
+        <div class="metric"><small>Per hour</small><strong id="hourly">£0.11</strong></div>
+        <div class="metric"><small>Per use day</small><strong id="daily">£0.56</strong></div>
+        <div class="metric"><small>Per week</small><strong id="weekly">£3.94</strong></div>
+        <div class="metric"><small>Per year</small><strong id="yearly">£205.31</strong></div>
+        <div class="metric"><small>Energy per year</small><strong id="energyyear">821.25 kWh</strong></div>
+        <div class="metric"><small>Devices counted</small><strong id="devicecount">1</strong></div>
+      </div>
+      <p class="note">An estimate only. Actual use changes with your PC’s workload and power draw.</p>
+      <div class="divider"></div>
+      <h2 class="compare-head">Compare a lower-power setup</h2>
+      <p class="intro">See how much the monthly bill could change.</p>
+      <label for="newwatts">New setup average power</label>
+      <div class="input-wrap"><input id="newwatts" type="number" min="0" max="10000" step="any" value="300" inputmode="decimal"><span class="input-unit">watts</span></div>
+      <div class="compare-result" id="saving">Potential saving: £5.63 per month (£68.44 per year)</div>
+      <div class="result-actions"><button class="btn btn-secondary" id="share" type="button">Share these settings</button></div>
+      <div class="share-field" id="shareField" hidden><label for="shareUrl">Shareable link</label><input id="shareUrl" type="url" readonly></div>
+    </section>
+  </div>
+
+  <section class="panel content-section" aria-labelledby="how-title">
+    <h2 id="how-title">How the estimate works</h2>
+    <div class="info-grid">
+      <article class="info-card"><h3>1. Enter average watts</h3><p>Use the average power drawn while the PC is on. A wall meter gives a better estimate than adding component or power supply ratings.</p></article>
+      <article class="info-card"><h3>2. Add your routine</h3><p>Enter hours used each day and how many days each week the PC is running. Add more devices if you want a combined estimate.</p></article>
+      <article class="info-card"><h3>3. Use your tariff</h3><p>Enter the price per kilowatt-hour from your bill. The calculator excludes standing charges and other parts of the bill.</p></article>
+    </div>
+    <div class="formula"><strong>Formula:</strong> energy (kWh) = watts × hours ÷ 1,000. Cost = energy × your price per kWh. The monthly figure uses your selected month length and days per week.</div>
+  </section>
+</main>
+<footer><div class="footer-inner"><span>PC Power Cost Calculator</span><span>Estimates are calculated in your browser and are not a meter reading.</span></div></footer>
 <script>
 (function(){
- const ids=['watts','hours','days','rate','quantity','daysmonth','newwatts'];
- const $=id=>document.getElementById(id);
- const fmt=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number.isFinite(n)?n:0);
- function read(id, fallback){
-   const raw=$(id).value.trim();
-   if(raw==='') return fallback;
-   const n=Number(raw);
-   return Number.isFinite(n)?n:fallback;
- }
- function updatePrice(){
-   const w=Math.max(0,read('watts',0));
-   const h=Math.min(24,Math.max(0,read('hours',0)));
-   const d=Math.min(7,Math.max(0,read('days',0)));
-   const p=Math.max(0,read('rate',0))/100;
-   const q=Math.max(1,read('quantity',1));
-   const dm=Math.min(31,Math.max(1,read('daysmonth',30)));
-   const perHour=w/1000*p*q;
-   const perDay=perHour*h;
-   const perWeek=perDay*d;
-   const perMonth=perDay*(d/7)*dm;
-   const perYear=perWeek*52;
-   $('hourly').textContent=fmt(perHour);
-   $('daily').textContent=fmt(perDay);
-   $('weekly').textContent=fmt(perWeek);
-   $('monthly').textContent=fmt(perMonth);
-   $('yearly').textContent=fmt(perYear);
-   $('energy').textContent=(w/1000*h*(d/7)*dm*q).toFixed(2)+' kWh';
-   const newer=Math.max(0,read('newwatts',0));
-   const delta=(w-newer)/1000*p*h*(d/7)*dm*q;
-   $('saving').textContent=delta>=0?'Potential saving: '+fmt(delta)+' per month':'New setup costs '+fmt(-delta)+' more per month';
-   $('status').textContent='Updated. Your entered values have been kept.';
- }
- $('update').addEventListener('click',updatePrice);
- ids.forEach(id=>{
-   $(id).addEventListener('input',updatePrice);
-   $(id).addEventListener('change',updatePrice);
- });
- $('reset').addEventListener('click',function(){
-   const defaults={watts:450,hours:5,days:7,rate:25,quantity:1,daysmonth:30,newwatts:300};
-   ids.forEach(id=>$(id).value=defaults[id]);
-   updatePrice();
- });
- updatePrice();
+  const ids=['watts','hours','days','rate','quantity','daysmonth','newwatts'];
+  const params={watts:'w',hours:'h',days:'d',rate:'p',quantity:'n',daysmonth:'m',newwatts:'nw'};
+  const defaults={watts:450,hours:5,days:7,rate:25,quantity:1,daysmonth:30,newwatts:300};
+  const storageKey='pc-power-calculator-v2';
+  const $=id=>document.getElementById(id);
+  const fmt=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number.isFinite(n)?n:0);
+  function read(id,min,max,fallback){
+    const raw=$(id).value.trim();
+    const n=raw===''?fallback:Number(raw);
+    return Math.min(max,Math.max(min,Number.isFinite(n)?n:fallback));
+  }
+  function currentValues(){
+    return {watts:read('watts',0,10000,defaults.watts),hours:read('hours',0,24,defaults.hours),days:read('days',0,7,defaults.days),rate:read('rate',0,1000,defaults.rate),quantity:read('quantity',1,100,defaults.quantity),daysmonth:read('daysmonth',1,31,defaults.daysmonth),newwatts:read('newwatts',0,10000,defaults.newwatts)};
+  }
+  function saveValues(values){
+    try{localStorage.setItem(storageKey,JSON.stringify(values));}catch(e){}
+  }
+  function updatePrice(message){
+    const v=currentValues();
+    const poundsPerKwh=v.rate/100;
+
+    const energyHour=v.watts/1000*v.quantity;
+    const perHour=energyHour*poundsPerKwh;
+    const perDay=perHour*v.hours;
+    const perWeek=perDay*v.days;
+    const perMonth=perDay*(v.days/7)*v.daysmonth;
+    const perYear=perDay*(v.days/7)*365;
+    const monthlyEnergy=energyHour*v.hours*(v.days/7)*v.daysmonth;
+    const yearlyEnergy=energyHour*v.hours*(v.days/7)*365;
+    $('hourly').textContent=fmt(perHour);
+    $('daily').textContent=fmt(perDay);
+    $('weekly').textContent=fmt(perWeek);
+    $('monthly').textContent=fmt(perMonth);
+    $('yearly').textContent=fmt(perYear);
+    $('energy').textContent=monthlyEnergy.toFixed(2)+' kWh';
+    $('energyyear').textContent=yearlyEnergy.toFixed(2)+' kWh';
+    $('devicecount').textContent=String(v.quantity);
+    const monthlyDifference=(v.watts-v.newwatts)/1000*poundsPerKwh*v.hours*(v.days/7)*v.daysmonth*v.quantity;
+    const yearlyDifference=(v.watts-v.newwatts)/1000*poundsPerKwh*v.hours*(v.days/7)*365*v.quantity;
+    const saving=$('saving');
+    if(monthlyDifference>=0){
+      saving.classList.remove('more');
+      saving.textContent='Potential saving: '+fmt(monthlyDifference)+' per month ('+fmt(yearlyDifference)+' per year)';
+    }else{
+      saving.classList.add('more');
+      saving.textContent='New setup costs '+fmt(-monthlyDifference)+' more per month ('+fmt(-yearlyDifference)+' per year)';
+    }
+    $('status').textContent=message||'Estimate updated. Your inputs are saved in this browser.';
+    saveValues(v);
+  }
+  function setValues(values){ids.forEach(id=>{if(Number.isFinite(Number(values[id]))) $(id).value=values[id];});}
+  const urlParams=new URLSearchParams(window.location.search);
+  const hasSharedValues=Object.values(params).some(key=>urlParams.has(key));
+  let loaded=false;
+  if(hasSharedValues){
+    const fromUrl={...defaults};
+    for(const id of ids){const key=params[id];if(urlParams.has(key)){const value=Number(urlParams.get(key));if(Number.isFinite(value)) fromUrl[id]=value;}}
+    setValues(fromUrl);loaded=true;
+  }
+  if(!loaded){
+    try{const stored=JSON.parse(localStorage.getItem(storageKey)||'null');if(stored&&typeof stored==='object') setValues({...defaults,...stored});}catch(e){}
+  }
+  $('update').addEventListener('click',()=>updatePrice());
+  ids.forEach(id=>{$(id).addEventListener('input',()=>updatePrice());$(id).addEventListener('change',()=>updatePrice());});
+  document.querySelectorAll('.preset').forEach(button=>button.addEventListener('click',()=>{
+    $('watts').value=button.dataset.watts;$('hours').value=button.dataset.hours;
+    document.querySelectorAll('.preset').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+    updatePrice(button.querySelector('strong').textContent+' example loaded. Adjust the figures to match your PC.');
+  }));
+  $('reset').addEventListener('click',()=>{
+    setValues(defaults);document.querySelectorAll('.preset').forEach(item=>item.setAttribute('aria-pressed','false'));
+    updatePrice('Example restored.');
+  });
+  $('share').addEventListener('click',async()=>{
+    const values=currentValues();
+    const url=new URL(window.location.href);url.search='';
+    for(const id of ids) url.searchParams.set(params[id],String(values[id]));
+    $('shareUrl').value=url.href;$('shareField').hidden=false;
+    try{await navigator.clipboard.writeText(url.href);$('status').textContent='Shareable link copied. Your current settings are included.';}
+    catch(e){$('status').textContent='Select and copy the shareable link below.';$('shareUrl').focus();$('shareUrl').select();}
+  });
+  updatePrice('Ready. Change any value or choose a quick starting point.');
 })();
 </script>
-</body></html>
+</body>
+</html>
