@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PC Power Cost Calculator</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#172033;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#101a32;color:#fff;padding:26px 18px}header p{color:#d7def0;margin:8px 0 0}
+main{max-width:900px;margin:auto;padding:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.card{background:#fff;border:1px solid #dfe5ef;border-radius:15px;padding:18px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:5px 0}h2{font-size:1.12rem;margin:0 0 12px}
+label{display:block;font-weight:650;font-size:.9rem;margin:12px 0 5px}
+input{display:block;width:100%;min-height:46px;padding:10px 12px;border:1px solid #bdc8d8;border-radius:9px;font:inherit;font-size:16px;background:white;color:#172033}
+input:focus{outline:3px solid #2457d622;border-color:#2457d6}
+.two,.metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.metric{background:#f1f5fb;border-radius:11px;padding:12px}.metric small{display:block;color:#64748b}.metric strong{display:block;font-size:1.35rem;margin-top:3px}
+.metric.big{grid-column:1/-1;background:#eaf0ff}.metric.big strong{font-size:2.1rem;color:#2457d6}
+button{min-height:46px;padding:10px 16px;border:0;border-radius:9px;font:inherit;font-weight:700;cursor:pointer}
+#update{background:#2457d6;color:white;width:100%;margin-top:16px}
+#reset{background:#e9eefb;color:#1e3a8a;width:100%;margin-top:8px}
+.status{font-size:.82rem;color:#087f5b;min-height:1.3em;margin:8px 0 0}
+.saving{background:#ecfdf5;color:#075b43;padding:12px;border-radius:10px;margin-top:10px;font-weight:700}
+.hint{font-size:.8rem;color:#64748b;margin:5px 0}
+@media(max-width:680px){.grid{grid-template-columns:1fr}main{padding:13px}.card{padding:16px}}
+</style>
+</head>
+<body>
+<header><div style="max-width:900px;margin:auto"><div style="font-size:.75rem;color:#9db7ff;font-weight:800;letter-spacing:.12em">FREE PC & ELECTRONICS TOOL</div><h1>PC Power Cost Calculator</h1><p>Change the figures, then tap Update price. Your entered values will stay in place.</p></div></header>
+<main><div class="grid">
+<section class="card">
+<h2>Your setup</h2>
+<label for="watts">Average power draw (watts)</label><input id="watts" type="number" min="0" step="any" value="450" inputmode="decimal">
+<p class="hint">Use average measured power draw where possible. PSU capacity is not constant consumption.</p>
+<div class="two">
+<div><label for="hours">Hours per day</label><input id="hours" type="number" min="0" max="24" step="any" value="5" inputmode="decimal"></div>
+<div><label for="days">Days per week</label><input id="days" type="number" min="0" max="7" step="any" value="7" inputmode="decimal"></div>
+</div>
+<label for="rate">Electricity price (pence per kWh)</label><input id="rate" type="number" min="0" step="any" value="25" inputmode="decimal">
+<div class="two">
+<div><label for="quantity">Number of devices</label><input id="quantity" type="number" min="1" step="1" value="1" inputmode="numeric"></div>
+<div><label for="daysmonth">Days per month</label><input id="daysmonth" type="number" min="1" max="31" step="1" value="30" inputmode="numeric"></div>
+</div>
+<button id="update" type="button">Update price</button>
+<button id="reset" type="button">Reset example</button>
+<p class="status" id="status" aria-live="polite">Ready. Change any value or tap Update price.</p>
+</section>
+<section class="card" aria-live="polite">
+<h2>Estimated running cost</h2>
+<div class="metrics">
+<div class="metric big"><small>Monthly cost</small><strong id="monthly">£50.63</strong></div>
+<div class="metric"><small>Per hour</small><strong id="hourly">£0.11</strong></div>
+<div class="metric"><small>Per day</small><strong id="daily">£0.56</strong></div>
+<div class="metric"><small>Per week</small><strong id="weekly">£3.94</strong></div>
+<div class="metric"><small>Per year</small><strong id="yearly">£615.94</strong></div>
+<div class="metric"><small>Monthly energy</small><strong id="energy">202.50 kWh</strong></div>
+</div>
+<p class="hint">Estimates exclude standing charges and assume the entered average draw throughout usage hours.</p>
+<hr style="border:0;border-top:1px solid #e2e8f0;margin:17px 0">
+<h2>Compare an upgrade</h2>
+<label for="newwatts">New setup power draw (watts)</label><input id="newwatts" type="number" min="0" step="any" value="300" inputmode="decimal">
+<div class="saving" id="saving">Potential saving: £16.88 per month</div>
+</section></div></main>
+<script>
+(function(){
+ const ids=['watts','hours','days','rate','quantity','daysmonth','newwatts'];
+ const $=id=>document.getElementById(id);
+ const fmt=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number.isFinite(n)?n:0);
+ function read(id, fallback){
+   const raw=$(id).value.trim();
+   if(raw==='') return fallback;
+   const n=Number(raw);
+   return Number.isFinite(n)?n:fallback;
+ }
+ function updatePrice(){
+   const w=Math.max(0,read('watts',0));
+   const h=Math.min(24,Math.max(0,read('hours',0)));
+   const d=Math.min(7,Math.max(0,read('days',0)));
+   const p=Math.max(0,read('rate',0))/100;
+   const q=Math.max(1,read('quantity',1));
+   const dm=Math.min(31,Math.max(1,read('daysmonth',30)));
+   const perHour=w/1000*p*q;
+   const perDay=perHour*h;
+   const perWeek=perDay*d;
+   const perMonth=perDay*(d/7)*dm;
+   const perYear=perWeek*52;
+   $('hourly').textContent=fmt(perHour);
+   $('daily').textContent=fmt(perDay);
+   $('weekly').textContent=fmt(perWeek);
+   $('monthly').textContent=fmt(perMonth);
+   $('yearly').textContent=fmt(perYear);
+   $('energy').textContent=(w/1000*h*(d/7)*dm*q).toFixed(2)+' kWh';
+   const newer=Math.max(0,read('newwatts',0));
+   const delta=(w-newer)/1000*p*h*(d/7)*dm*q;
+   $('saving').textContent=delta>=0?'Potential saving: '+fmt(delta)+' per month':'New setup costs '+fmt(-delta)+' more per month';
+   $('status').textContent='Updated. Your entered values have been kept.';
+ }
+ $('update').addEventListener('click',updatePrice);
+ ids.forEach(id=>{
+   $(id).addEventListener('input',updatePrice);
+   $(id).addEventListener('change',updatePrice);
+ });
+ $('reset').addEventListener('click',function(){
+   const defaults={watts:450,hours:5,days:7,rate:25,quantity:1,daysmonth:30,newwatts:300};
+   ids.forEach(id=>$(id).value=defaults[id]);
+   updatePrice();
+ });
+ updatePrice();
+})();
+</script>
+</body></html>
